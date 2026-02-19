@@ -36,12 +36,19 @@
           </div>
         </div>
 
-        <div v-if="repeatingPart" class="repeat-bar">
-          <span>🔁 <strong>{{ repeatingPart.name }}</strong></span>
-          <span class="rep-status" :class="startingIn > 0 ? 'waiting' : 'playing'">
-            {{ startingIn > 0 ? `in ${startingIn}s` : 'playing' }}
-          </span>
-          <button class="btn-danger btn-sm" @click="stop">Stop</button>
+        <!-- Repeat selection / status bar -->
+        <div v-if="selectedIds.length > 0" class="repeat-bar" :class="{ active: isRepeating }">
+          <span class="rep-label">🔁 {{ selectionLabel }}</span>
+          <template v-if="isRepeating">
+            <span class="rep-status" :class="startingIn > 0 ? 'waiting' : 'playing'">
+              {{ startingIn > 0 ? `in ${startingIn}s` : 'playing' }}
+            </span>
+            <button class="btn-danger btn-sm" @click="stopRepeat">Stop</button>
+          </template>
+          <template v-else>
+            <button class="btn-primary btn-sm" @click="startRepeat">▶ Repeat</button>
+          </template>
+          <button class="btn-clear" @click="clearSelection" title="Clear selection">✕</button>
         </div>
 
         <p v-if="song.parts.length === 0" class="empty">No parts yet. Add some to start practicing!</p>
@@ -52,10 +59,10 @@
             :key="part.id"
             :part="part"
             :isActive="activePart?.id === part.id"
-            :isRepeating="repeatingPart?.id === part.id"
+            :isRepeating="selectedIds.includes(part.id)"
             @play-part="playPart"
             @play-from="playFrom"
-            @repeat-part="toggleRepeat"
+            @repeat-part="toggleSelect"
             @toggle-learned="toggleLearned"
             @edit="openEditPart"
           />
@@ -75,7 +82,7 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useSongsStore } from '../stores/songs.js'
 import YoutubePlayer from './YoutubePlayer.vue'
@@ -87,7 +94,8 @@ const store = useSongsStore()
 
 const playerApi = ref(null)
 const activePart = ref(null)
-const repeatingPart = ref(null)
+const selectedIds = ref([])   // part IDs queued for repeat
+const isRepeating = ref(false)
 const startingIn = ref(0)
 const editorOpen = ref(false)
 const editorMode = ref('song')
@@ -95,6 +103,8 @@ const editPartTarget = ref(null)
 
 let delayTimeout = null
 let delayInterval = null
+
+// ── Delay / countdown ─────────────────────────────────────────────────────
 
 function withDelay(fn) {
   cancelDelay()
@@ -117,9 +127,13 @@ function cancelDelay() {
 
 onUnmounted(() => cancelDelay())
 
+// ── Player ready ───────────────────────────────────────────────────────────
+
 function onPlayerReady(api) {
   playerApi.value = api
 }
+
+// ── Single-part / full-song play ───────────────────────────────────────────
 
 function playFullSong() {
   stop()
@@ -132,32 +146,76 @@ function playPart(part) {
   withDelay(() => playerApi.value?.playPart(part.start, part.end))
 }
 
-function toggleRepeat(part) {
-  if (repeatingPart.value?.id === part.id) {
-    stop()
-    return
-  }
-  stop()
-  repeatingPart.value = part
-  playWithRepeat(part)
-}
-
-function playWithRepeat(part) {
-  activePart.value = part
-  withDelay(() => {
-    playerApi.value?.playPart(part.start, part.end, () => {
-      if (repeatingPart.value?.id !== part.id) return
-      playWithRepeat(part)
-    })
-  })
-}
-
 function stop() {
+  isRepeating.value = false
   cancelDelay()
-  repeatingPart.value = null
+  activePart.value = null
+  playerApi.value?.stop()
+  // Note: keeps selectedIds so user can restart repeat easily
+}
+
+// ── Multi-part repeat selection ────────────────────────────────────────────
+
+const selectionLabel = computed(() => {
+  const selected = props.song.parts.filter(p => selectedIds.value.includes(p.id))
+  if (selected.length === 0) return ''
+  if (selected.length <= 3) return selected.map(p => p.name).join(', ')
+  return `${selected[0].name} +${selected.length - 1} more`
+})
+
+function toggleSelect(part) {
+  const idx = selectedIds.value.indexOf(part.id)
+  if (idx === -1) {
+    selectedIds.value.push(part.id)
+  } else {
+    selectedIds.value.splice(idx, 1)
+    if (isRepeating.value) stopRepeat()
+  }
+}
+
+function clearSelection() {
+  stopRepeat()
+  selectedIds.value = []
+}
+
+// ── Repeat loop ────────────────────────────────────────────────────────────
+
+function startRepeat() {
+  if (!selectedIds.value.length) return
+  isRepeating.value = true
+  runRepeatCycle()
+}
+
+function stopRepeat() {
+  isRepeating.value = false
+  cancelDelay()
   activePart.value = null
   playerApi.value?.stop()
 }
+
+function runRepeatCycle() {
+  if (!isRepeating.value) return
+  // Resolve current selection in song order
+  const parts = props.song.parts.filter(p => selectedIds.value.includes(p.id))
+  if (!parts.length) { stopRepeat(); return }
+  withDelay(() => runRepeatPart(parts, 0))
+}
+
+function runRepeatPart(parts, index) {
+  if (!isRepeating.value) return
+  const part = parts[index]
+  activePart.value = part
+  playerApi.value?.playPart(part.start, part.end, () => {
+    if (!isRepeating.value) return
+    if (index + 1 < parts.length) {
+      runRepeatPart(parts, index + 1)  // next part in same cycle — no delay
+    } else {
+      runRepeatCycle()                 // cycle done — restart with 5s delay
+    }
+  })
+}
+
+// ── Play from / sequence ───────────────────────────────────────────────────
 
 function playFrom(startPart) {
   stop()
@@ -181,6 +239,8 @@ function playSequence(parts, withStartDelay = false) {
   else startHead()
 }
 
+// ── Auto-split ─────────────────────────────────────────────────────────────
+
 function autoSplitParts() {
   const duration = Math.floor(playerApi.value?.getDuration() ?? 0)
   if (!duration) {
@@ -198,8 +258,12 @@ function autoSplitParts() {
     t += 30
     i++
   }
+  selectedIds.value = []
+  isRepeating.value = false
   store.updateSong({ ...props.song, parts })
 }
+
+// ── Learned / editor ──────────────────────────────────────────────────────
 
 function toggleLearned(part) {
   const updatedParts = props.song.parts.map(p =>
@@ -332,22 +396,46 @@ function openEditPart(part) {
 .sidebar-header h3 { color: #a78bfa; font-size: 0.95rem; }
 .sidebar-header-actions { display: flex; gap: 0.35rem; }
 
+/* ── Repeat bar ───────────────────────────────── */
 .repeat-bar {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.45rem 0.9rem;
-  background: #1e1b4b;
-  border-bottom: 1px solid #7c3aed;
+  gap: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  background: #1a1a3e;
+  border-bottom: 1px solid #4c1d95;
   font-size: 0.82rem;
   color: #c4b5fd;
   flex-shrink: 0;
 }
-.repeat-bar strong { color: #e2e8f0; }
-.rep-status { margin-left: auto; font-size: 0.78rem; }
+.repeat-bar.active {
+  background: #1e1b4b;
+  border-bottom-color: #7c3aed;
+}
+.rep-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rep-status { font-size: 0.78rem; white-space: nowrap; }
 .rep-status.waiting { color: #a78bfa; }
 .rep-status.playing { color: #34d399; }
 
+.btn-clear {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.8rem;
+  padding: 0.15rem 0.3rem;
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.btn-clear:hover { color: #e2e8f0; background: rgba(255,255,255,0.08); opacity: 1; }
+
+/* ── Parts list ───────────────────────────────── */
 .parts-list {
   flex: 1;
   overflow-y: auto;
