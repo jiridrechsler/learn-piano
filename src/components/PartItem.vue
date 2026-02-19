@@ -17,6 +17,7 @@
     <div class="part-actions">
       <button class="btn-primary btn-sm" @click="$emit('play-part', part)">▶ Part</button>
       <button class="btn-secondary btn-sm" @click="$emit('play-from', part)">▶ From here</button>
+      <button class="btn-sm repeat-btn" :class="isRepeating ? 'btn-primary' : 'btn-secondary'" @click="$emit('repeat-part', part)" :title="isRepeating ? 'Stop repeat' : 'Repeat this part'">🔁</button>
       <button class="btn-secondary btn-sm" @click="$emit('edit', part)">Edit</button>
     </div>
   </div>
@@ -25,9 +26,10 @@
 <script setup>
 const props = defineProps({
   part: { type: Object, required: true },
-  isActive: { type: Boolean, default: false }
+  isActive: { type: Boolean, default: false },
+  isRepeating: { type: Boolean, default: false }
 })
-const emit = defineEmits(['toggle-learned', 'play-part', 'play-from', 'edit'])
+const emit = defineEmits(['toggle-learned', 'play-part', 'play-from', 'repeat-part', 'edit'])
 
 function fmt(sec) {
   const m = Math.floor(sec / 60)

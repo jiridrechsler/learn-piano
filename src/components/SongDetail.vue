@@ -21,14 +21,23 @@
 
       <p v-if="song.parts.length === 0" class="empty">No parts yet. Add some to start practicing!</p>
 
+      <div v-if="repeatingPart" class="repeat-bar">
+        <span>🔁 Repeating <strong>{{ repeatingPart.name }}</strong></span>
+        <span v-if="countdown > 0" class="countdown">restarting in {{ countdown }}…</span>
+        <span v-else class="countdown playing">playing</span>
+        <button class="btn-danger btn-sm" @click="stopRepeat">Stop</button>
+      </div>
+
       <div class="parts-list">
         <PartItem
           v-for="part in song.parts"
           :key="part.id"
           :part="part"
           :isActive="activePart?.id === part.id"
+          :isRepeating="repeatingPart?.id === part.id"
           @play-part="playPart"
           @play-from="playFrom"
+          @repeat-part="toggleRepeat"
           @toggle-learned="toggleLearned"
           @edit="openEditPart"
         />
@@ -46,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { useSongsStore } from '../stores/songs.js'
 import YoutubePlayer from './YoutubePlayer.vue'
 import PartItem from './PartItem.vue'
@@ -57,6 +66,9 @@ const store = useSongsStore()
 
 const playerApi = ref(null)
 const activePart = ref(null)
+const repeatingPart = ref(null)
+const countdown = ref(0)
+let countdownTimer = null
 const editorOpen = ref(false)
 const editorMode = ref('song') // 'song' | 'part'
 const editPartTarget = ref(null)
@@ -66,9 +78,44 @@ function onPlayerReady(api) {
 }
 
 function playPart(part) {
+  stopRepeat()
   activePart.value = part
   playerApi.value?.playPart(part.start, part.end)
 }
+
+function toggleRepeat(part) {
+  if (repeatingPart.value?.id === part.id) {
+    stopRepeat()
+    return
+  }
+  stopRepeat()
+  repeatingPart.value = part
+  playWithRepeat(part)
+}
+
+function playWithRepeat(part) {
+  activePart.value = part
+  countdown.value = 0
+  playerApi.value?.playPart(part.start, part.end, () => {
+    if (repeatingPart.value?.id !== part.id) return
+    countdown.value = 5
+    countdownTimer = setInterval(() => {
+      countdown.value--
+      if (countdown.value <= 0) {
+        clearInterval(countdownTimer)
+        if (repeatingPart.value?.id === part.id) playWithRepeat(part)
+      }
+    }, 1000)
+  })
+}
+
+function stopRepeat() {
+  clearInterval(countdownTimer)
+  repeatingPart.value = null
+  countdown.value = 0
+}
+
+onUnmounted(() => clearInterval(countdownTimer))
 
 function playFrom(startPart) {
   const parts = props.song.parts
@@ -146,4 +193,20 @@ function openEditPart(part) {
 .parts-header h3 { color: #a78bfa; }
 .parts-list { display: flex; flex-direction: column; gap: 0.4rem; }
 .empty { color: #6b7280; margin-top: 1rem; text-align: center; }
+
+.repeat-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: #1e1b4b;
+  border: 1px solid #7c3aed;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 0.7rem;
+  font-size: 0.85rem;
+  color: #c4b5fd;
+}
+.repeat-bar strong { color: #e2e8f0; }
+.countdown { color: #a78bfa; margin-left: auto; }
+.countdown.playing { color: #34d399; }
 </style>
