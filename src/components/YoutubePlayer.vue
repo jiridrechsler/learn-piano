@@ -92,10 +92,8 @@ const api = {
 <style scoped>
 .yt-wrapper {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  min-height: 480px;
+  height: 100%;
   background: #000;
-  border-radius: 8px;
   overflow: hidden;
 }
 .yt-wrapper > div { width: 100%; height: 100%; }

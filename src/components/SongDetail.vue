@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="song-detail">
+
     <div class="detail-header">
       <h2>{{ song.title }}</h2>
       <div class="detail-actions">
@@ -11,41 +12,53 @@
       </div>
     </div>
 
-    <YoutubePlayer :videoId="song.youtubeId" @ready="onPlayerReady" class="player" />
+    <div class="main-area">
 
-    <div class="parts-section">
-      <div class="parts-header">
-        <h3>Parts</h3>
-        <button class="btn-primary btn-sm" @click="openAddPart">+ Add Part</button>
+      <!-- Video pane -->
+      <div class="video-pane">
+        <YoutubePlayer :videoId="song.youtubeId" @ready="onPlayerReady" />
+        <transition name="fade">
+          <div v-if="startingIn > 0" class="countdown-overlay">
+            <div class="countdown-ring">
+              <span class="countdown-number">{{ startingIn }}</span>
+            </div>
+          </div>
+        </transition>
       </div>
 
-      <p v-if="song.parts.length === 0" class="empty">No parts yet. Add some to start practicing!</p>
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h3>Parts</h3>
+          <button class="btn-primary btn-sm" @click="openAddPart">+ Add Part</button>
+        </div>
 
-      <div v-if="repeatingPart" class="repeat-bar">
-        <span>🔁 Repeating <strong>{{ repeatingPart.name }}</strong></span>
-        <span v-if="startingIn > 0" class="countdown">starting in {{ startingIn }}…</span>
-        <span v-else class="countdown playing">playing</span>
-        <button class="btn-danger btn-sm" @click="stop">Stop</button>
-      </div>
+        <div v-if="repeatingPart" class="repeat-bar">
+          <span>🔁 <strong>{{ repeatingPart.name }}</strong></span>
+          <span class="rep-status" :class="startingIn > 0 ? 'waiting' : 'playing'">
+            {{ startingIn > 0 ? `in ${startingIn}s` : 'playing' }}
+          </span>
+          <button class="btn-danger btn-sm" @click="stop">Stop</button>
+        </div>
 
-      <div v-else-if="startingIn > 0" class="starting-bar">
-        ▶ Starting in {{ startingIn }}…
-      </div>
+        <p v-if="song.parts.length === 0" class="empty">No parts yet. Add some to start practicing!</p>
 
-      <div class="parts-list">
-        <PartItem
-          v-for="part in song.parts"
-          :key="part.id"
-          :part="part"
-          :isActive="activePart?.id === part.id"
-          :isRepeating="repeatingPart?.id === part.id"
-          @play-part="playPart"
-          @play-from="playFrom"
-          @repeat-part="toggleRepeat"
-          @toggle-learned="toggleLearned"
-          @edit="openEditPart"
-        />
-      </div>
+        <div class="parts-list">
+          <PartItem
+            v-for="part in song.parts"
+            :key="part.id"
+            :part="part"
+            :isActive="activePart?.id === part.id"
+            :isRepeating="repeatingPart?.id === part.id"
+            @play-part="playPart"
+            @play-from="playFrom"
+            @repeat-part="toggleRepeat"
+            @toggle-learned="toggleLearned"
+            @edit="openEditPart"
+          />
+        </div>
+      </aside>
+
     </div>
 
     <SongEditor
@@ -73,7 +86,7 @@ const activePart = ref(null)
 const repeatingPart = ref(null)
 const startingIn = ref(0)
 const editorOpen = ref(false)
-const editorMode = ref('song') // 'song' | 'part'
+const editorMode = ref('song')
 const editPartTarget = ref(null)
 
 let delayTimeout = null
@@ -191,16 +204,25 @@ function openEditPart(part) {
 </script>
 
 <style scoped>
+.song-detail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ── Header bar ───────────────────────────────── */
 .detail-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #2d2d4e;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
-.detail-header h2 { font-size: 1.3rem; color: #c4b5fd; }
-.detail-actions { display: flex; gap: 0.4rem; align-items: center; }
+.detail-header h2 { font-size: 1.1rem; color: #c4b5fd; }
+.detail-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
 .skip-badge {
   margin-left: 0.35rem;
   font-size: 0.7rem;
@@ -211,33 +233,124 @@ function openEditPart(part) {
   vertical-align: middle;
 }
 
-.player { margin-bottom: 1.5rem; }
+/* ── Main split area ──────────────────────────── */
+.main-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
 
-.parts-section { margin-top: 0.5rem; }
-.parts-header {
+/* ── Video pane ───────────────────────────────── */
+.video-pane {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  background: #000;
+}
+
+/* ── Countdown overlay ────────────────────────── */
+.countdown-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 10;
+}
+.countdown-ring {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 4px solid #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(124, 58, 237, 0.15);
+  box-shadow: 0 0 40px rgba(124, 58, 237, 0.4);
+  animation: pulse 1s ease-in-out infinite;
+}
+.countdown-number {
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(124, 58, 237, 0.4); }
+  50%       { transform: scale(1.06); box-shadow: 0 0 60px rgba(124, 58, 237, 0.7); }
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.25s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* ── Sidebar ──────────────────────────────────── */
+.sidebar {
+  width: 360px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #2d2d4e;
+  overflow: hidden;
+}
+
+.sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.7rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid #2d2d4e;
+  flex-shrink: 0;
 }
-.parts-header h3 { color: #a78bfa; }
-.parts-list { display: flex; flex-direction: column; gap: 0.4rem; }
-.empty { color: #6b7280; margin-top: 1rem; text-align: center; }
+.sidebar-header h3 { color: #a78bfa; font-size: 0.95rem; }
 
-.repeat-bar, .starting-bar {
+.repeat-bar {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.6rem;
+  padding: 0.45rem 0.9rem;
   background: #1e1b4b;
-  border: 1px solid #7c3aed;
-  border-radius: 8px;
-  padding: 0.5rem 0.9rem;
-  margin-bottom: 0.7rem;
-  font-size: 0.85rem;
+  border-bottom: 1px solid #7c3aed;
+  font-size: 0.82rem;
   color: #c4b5fd;
+  flex-shrink: 0;
 }
 .repeat-bar strong { color: #e2e8f0; }
-.countdown { color: #a78bfa; margin-left: auto; }
-.countdown.playing { color: #34d399; }
-.starting-bar { border-color: #4c1d95; color: #a78bfa; }
+.rep-status { margin-left: auto; font-size: 0.78rem; }
+.rep-status.waiting { color: #a78bfa; }
+.rep-status.playing { color: #34d399; }
+
+.parts-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.empty { color: #6b7280; padding: 1.5rem; text-align: center; font-size: 0.85rem; }
+
+/* ── Responsive ───────────────────────────────── */
+@media (max-width: 768px) {
+  .main-area {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .video-pane {
+    aspect-ratio: 16 / 9;
+    flex: none;
+    width: 100%;
+  }
+  .sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #2d2d4e;
+    flex: none;
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+}
 </style>

@@ -1,12 +1,14 @@
 <template>
-  <div>
+  <div class="app">
     <header class="app-header">
       <span v-if="store.activeSong" class="back-btn" @click="store.setActiveSong(null)">← Songs</span>
       <h1>🎹 Learn Piano</h1>
     </header>
 
-    <SongList v-if="!store.activeSong" />
-    <SongDetail v-else :song="store.activeSong" />
+    <main class="app-content" :class="store.activeSong ? 'detail-mode' : 'list-mode'">
+      <SongList v-if="!store.activeSong" />
+      <SongDetail v-else :song="store.activeSong" />
+    </main>
   </div>
 </template>
 
@@ -52,24 +54,49 @@ onUnmounted(() => window.removeEventListener('hashchange', onHashChange))
 </script>
 
 <style>
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .app-header {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
+  padding: 0.6rem 1.25rem;
   border-bottom: 1px solid #2d2d4e;
 }
-.app-header h1 { font-size: 1.5rem; color: #a78bfa; }
+.app-header h1 { font-size: 1.2rem; color: #a78bfa; }
+
 .back-btn {
   cursor: pointer;
   color: #7c3aed;
-  font-size: 0.9rem;
-  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.6rem;
   border: 1px solid #7c3aed;
   border-radius: 6px;
+  white-space: nowrap;
 }
 .back-btn:hover { background: #7c3aed; color: #fff; }
+
+.app-content {
+  flex: 1;
+  min-height: 0;
+}
+.app-content.list-mode {
+  overflow-y: auto;
+  padding: 1.5rem;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+.app-content.detail-mode {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
 button {
   cursor: pointer;
