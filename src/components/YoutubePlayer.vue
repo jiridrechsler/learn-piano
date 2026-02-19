@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 
 const props = defineProps({ videoId: { type: String, required: true } })
 const emit = defineEmits(['ready'])

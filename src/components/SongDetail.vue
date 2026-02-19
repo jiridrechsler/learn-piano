@@ -3,10 +3,10 @@
     <div class="detail-header">
       <h2>{{ song.title }}</h2>
       <div class="detail-actions">
-        <button class="btn-secondary btn-sm" @click="playerApi?.playFull(song.introSkip || 0)">
+        <button class="btn-secondary btn-sm" @click="playFullSong">
           ▶ Full Song<span v-if="song.introSkip" class="skip-badge">+{{ song.introSkip }}s</span>
         </button>
-        <button class="btn-secondary btn-sm" @click="playerApi?.stop()">⏹ Stop</button>
+        <button class="btn-secondary btn-sm" @click="stop">⏹ Stop</button>
         <button class="btn-secondary btn-sm" @click="openEditor">Edit Song</button>
       </div>
     </div>
@@ -23,9 +23,13 @@
 
       <div v-if="repeatingPart" class="repeat-bar">
         <span>🔁 Repeating <strong>{{ repeatingPart.name }}</strong></span>
-        <span v-if="countdown > 0" class="countdown">restarting in {{ countdown }}…</span>
+        <span v-if="startingIn > 0" class="countdown">starting in {{ startingIn }}…</span>
         <span v-else class="countdown playing">playing</span>
-        <button class="btn-danger btn-sm" @click="stopRepeat">Stop</button>
+        <button class="btn-danger btn-sm" @click="stop">Stop</button>
+      </div>
+
+      <div v-else-if="startingIn > 0" class="starting-bar">
+        ▶ Starting in {{ startingIn }}…
       </div>
 
       <div class="parts-list">
@@ -67,71 +71,97 @@ const store = useSongsStore()
 const playerApi = ref(null)
 const activePart = ref(null)
 const repeatingPart = ref(null)
-const countdown = ref(0)
-let countdownTimer = null
+const startingIn = ref(0)
 const editorOpen = ref(false)
 const editorMode = ref('song') // 'song' | 'part'
 const editPartTarget = ref(null)
+
+let delayTimeout = null
+let delayInterval = null
+
+function withDelay(fn) {
+  cancelDelay()
+  startingIn.value = 5
+  delayInterval = setInterval(() => {
+    startingIn.value--
+    if (startingIn.value <= 0) clearInterval(delayInterval)
+  }, 1000)
+  delayTimeout = setTimeout(() => {
+    startingIn.value = 0
+    fn()
+  }, 5000)
+}
+
+function cancelDelay() {
+  clearInterval(delayInterval)
+  clearTimeout(delayTimeout)
+  startingIn.value = 0
+}
+
+onUnmounted(() => cancelDelay())
 
 function onPlayerReady(api) {
   playerApi.value = api
 }
 
+function playFullSong() {
+  stop()
+  withDelay(() => playerApi.value?.playFull(props.song.introSkip || 0))
+}
+
 function playPart(part) {
-  stopRepeat()
+  stop()
   activePart.value = part
-  playerApi.value?.playPart(part.start, part.end)
+  withDelay(() => playerApi.value?.playPart(part.start, part.end))
 }
 
 function toggleRepeat(part) {
   if (repeatingPart.value?.id === part.id) {
-    stopRepeat()
+    stop()
     return
   }
-  stopRepeat()
+  stop()
   repeatingPart.value = part
   playWithRepeat(part)
 }
 
 function playWithRepeat(part) {
   activePart.value = part
-  countdown.value = 0
-  playerApi.value?.playPart(part.start, part.end, () => {
-    if (repeatingPart.value?.id !== part.id) return
-    countdown.value = 5
-    countdownTimer = setInterval(() => {
-      countdown.value--
-      if (countdown.value <= 0) {
-        clearInterval(countdownTimer)
-        if (repeatingPart.value?.id === part.id) playWithRepeat(part)
-      }
-    }, 1000)
+  withDelay(() => {
+    playerApi.value?.playPart(part.start, part.end, () => {
+      if (repeatingPart.value?.id !== part.id) return
+      playWithRepeat(part)
+    })
   })
 }
 
-function stopRepeat() {
-  clearInterval(countdownTimer)
+function stop() {
+  cancelDelay()
   repeatingPart.value = null
-  countdown.value = 0
+  activePart.value = null
+  playerApi.value?.stop()
 }
 
-onUnmounted(() => clearInterval(countdownTimer))
-
 function playFrom(startPart) {
+  stop()
   const parts = props.song.parts
   const idx = parts.findIndex(p => p.id === startPart.id)
   if (idx === -1) return
-  playSequence(parts.slice(idx))
+  playSequence(parts.slice(idx), true)
 }
 
-function playSequence(parts) {
+function playSequence(parts, withStartDelay = false) {
   if (parts.length === 0) { activePart.value = null; return }
   const [head, ...tail] = parts
   activePart.value = head
-  playerApi.value?.playPart(head.start, head.end, () => {
-    if (tail.length > 0) playSequence(tail)
-    else activePart.value = null
-  })
+  const startHead = () => {
+    playerApi.value?.playPart(head.start, head.end, () => {
+      if (tail.length > 0) playSequence(tail)
+      else activePart.value = null
+    })
+  }
+  if (withStartDelay) withDelay(startHead)
+  else startHead()
 }
 
 function toggleLearned(part) {
@@ -194,7 +224,7 @@ function openEditPart(part) {
 .parts-list { display: flex; flex-direction: column; gap: 0.4rem; }
 .empty { color: #6b7280; margin-top: 1rem; text-align: center; }
 
-.repeat-bar {
+.repeat-bar, .starting-bar {
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -209,4 +239,5 @@ function openEditPart(part) {
 .repeat-bar strong { color: #e2e8f0; }
 .countdown { color: #a78bfa; margin-left: auto; }
 .countdown.playing { color: #34d399; }
+.starting-bar { border-color: #4c1d95; color: #a78bfa; }
 </style>
