@@ -198,6 +198,7 @@ function runRepeatCycle() {
   // Resolve current selection in song order
   const parts = props.song.parts.filter(p => selectedIds.value.includes(p.id))
   if (!parts.length) { stopRepeat(); return }
+  activePart.value = parts[0]  // highlight first part during the countdown
   withDelay(() => runRepeatPart(parts, 0))
 }
 

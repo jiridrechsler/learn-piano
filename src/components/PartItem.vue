@@ -1,5 +1,7 @@
 <template>
   <div class="part-item" :class="{ learned: part.learned, active: isActive }">
+    <span v-if="isActive" class="playing-dot" aria-label="Now playing"></span>
+
     <label class="learned-check" :title="part.learned ? 'Mark as not learned' : 'Mark as learned'">
       <input type="checkbox" :checked="part.learned" @change="toggleLearned" />
       <span class="checkmark">{{ part.learned ? '✓' : '' }}</span>
@@ -51,11 +53,28 @@ function toggleLearned() {
   border: 1px solid #2d2d4e;
   border-radius: 8px;
   padding: 0.6rem 0.8rem;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
   flex-wrap: wrap;
 }
-.part-item.active { border-color: #7c3aed; background: #1e1b4b; }
+.part-item.active {
+  border-color: #34d399;
+  background: #0d2b1e;
+  box-shadow: inset 3px 0 0 #34d399;
+}
 .part-item.learned { opacity: 0.6; }
+
+.playing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  flex-shrink: 0;
+  animation: blink 1s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
 
 .learned-check { cursor: pointer; flex-shrink: 0; }
 .learned-check input { display: none; }
