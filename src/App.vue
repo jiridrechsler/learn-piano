@@ -11,13 +11,44 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 import { useSongsStore } from './stores/songs.js'
 import SongList from './components/SongList.vue'
 import SongDetail from './components/SongDetail.vue'
 
 const store = useSongsStore()
-onMounted(() => store.load())
+
+function songSlug(song) {
+  return song.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
+
+function setHash(song) {
+  const hash = song ? `#/${song.id}/${songSlug(song)}` : ''
+  history.replaceState(null, '', window.location.pathname + hash)
+}
+
+function songFromHash() {
+  const id = window.location.hash.slice(1).split('/').filter(Boolean)[0]
+  return id ? store.songs.find(s => s.id === id) ?? null : null
+}
+
+function onHashChange() {
+  const song = songFromHash()
+  if (song?.id !== store.activeSong?.id) store.setActiveSong(song)
+}
+
+watch(() => store.activeSong, (song) => {
+  setHash(song)
+})
+
+onMounted(async () => {
+  await store.load()
+  const song = songFromHash()
+  if (song) store.setActiveSong(song)
+  window.addEventListener('hashchange', onHashChange)
+})
+
+onUnmounted(() => window.removeEventListener('hashchange', onHashChange))
 </script>
 
 <style>
