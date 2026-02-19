@@ -4,7 +4,17 @@
       "id": "719e9a00-7e1a-4aeb-b811-620ceacc19f2",
       "title": "U2 - With or Without You ",
       "youtubeId": "e3GmrWK4zvw",
-      "parts": []
+      "parts": [
+        {
+          "id": "48177e0f-5b51-449b-91cd-b5ad2c3a90e9",
+          "learned": false,
+          "name": "Start ",
+          "start": 8,
+          "end": 30,
+          "notes": "tets"
+        }
+      ],
+      "introSkip": 8
     }
   ]
 }

@@ -10,6 +10,10 @@
         <label>YouTube URL or Video ID
           <input v-model="form.youtubeUrl" placeholder="https://youtube.com/watch?v=... or video ID" />
         </label>
+        <label>Skip intro (seconds)
+          <input v-model.number="form.introSkip" type="number" min="0" placeholder="0 = no skip" />
+          <span class="field-hint">▶ Full Song will start here instead of t=0</span>
+        </label>
         <div class="preview-link" v-if="extractedId">
           <a :href="`https://www.youtube.com/watch?v=${extractedId}`" target="_blank">Preview on YouTube ↗</a>
         </div>
@@ -63,7 +67,8 @@ const store = useSongsStore()
 // ----- Song form -----
 const form = ref({
   title: props.song?.title ?? '',
-  youtubeUrl: props.song?.youtubeId ?? ''
+  youtubeUrl: props.song?.youtubeId ?? '',
+  introSkip: props.song?.introSkip ?? 0
 })
 
 const extractedId = computed(() => {
@@ -76,10 +81,11 @@ const extractedId = computed(() => {
 
 function saveSong() {
   if (!form.value.title || !extractedId.value) return
+  const introSkip = form.value.introSkip > 0 ? form.value.introSkip : 0
   if (props.song) {
-    store.updateSong({ ...props.song, title: form.value.title, youtubeId: extractedId.value })
+    store.updateSong({ ...props.song, title: form.value.title, youtubeId: extractedId.value, introSkip })
   } else {
-    store.addSong({ id: uuidv4(), title: form.value.title, youtubeId: extractedId.value, parts: [] })
+    store.addSong({ id: uuidv4(), title: form.value.title, youtubeId: extractedId.value, introSkip, parts: [] })
   }
   emit('close')
 }
@@ -161,6 +167,7 @@ input, textarea {
 input:focus, textarea:focus { border-color: #7c3aed; }
 .time-row { display: flex; gap: 0.8rem; }
 .time-row label { flex: 1; }
+.field-hint { font-size: 0.75rem; color: #6b7280; margin-top: 0.15rem; }
 .preview-link { font-size: 0.8rem; }
 .preview-link a { color: #7c3aed; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.3rem; }

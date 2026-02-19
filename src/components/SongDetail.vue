@@ -3,7 +3,9 @@
     <div class="detail-header">
       <h2>{{ song.title }}</h2>
       <div class="detail-actions">
-        <button class="btn-secondary btn-sm" @click="playerApi?.playFull()">▶ Full Song</button>
+        <button class="btn-secondary btn-sm" @click="playerApi?.playFull(song.introSkip || 0)">
+          ▶ Full Song<span v-if="song.introSkip" class="skip-badge">+{{ song.introSkip }}s</span>
+        </button>
         <button class="btn-secondary btn-sm" @click="playerApi?.stop()">⏹ Stop</button>
         <button class="btn-secondary btn-sm" @click="openEditor">Edit Song</button>
       </div>
@@ -121,7 +123,16 @@ function openEditPart(part) {
   gap: 0.5rem;
 }
 .detail-header h2 { font-size: 1.3rem; color: #c4b5fd; }
-.detail-actions { display: flex; gap: 0.4rem; }
+.detail-actions { display: flex; gap: 0.4rem; align-items: center; }
+.skip-badge {
+  margin-left: 0.35rem;
+  font-size: 0.7rem;
+  background: #4c1d95;
+  color: #c4b5fd;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  vertical-align: middle;
+}
 
 .player { margin-bottom: 1.5rem; }
 
