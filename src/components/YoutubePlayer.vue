@@ -56,6 +56,7 @@ onUnmounted(() => {
 })
 
 const api = {
+  getDuration() { return player?.getDuration() ?? 0 },
   seekTo(t) { player?.seekTo(t, true) },
   play() { player?.playVideo() },
   pause() { player?.pauseVideo() },

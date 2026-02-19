@@ -6,27 +6,91 @@
       "youtubeId": "e3GmrWK4zvw",
       "parts": [
         {
-          "id": "48177e0f-5b51-449b-91cd-b5ad2c3a90e9",
-          "learned": false,
-          "name": "Start ",
+          "id": "d99819ce-520d-4954-96c7-ab72fb2d1dcf",
+          "name": "Part 1",
           "start": 8,
-          "end": 30,
-          "notes": "tets"
-        },
-        {
-          "id": "deff12f3-9ded-43be-ad17-dfeb96a27c73",
+          "end": 38,
           "learned": false,
-          "name": "part 2",
-          "start": 28,
-          "end": 46,
           "notes": ""
         },
         {
-          "id": "064242af-807c-4d27-8f83-35a97d27a02f",
+          "id": "9bc301a5-c558-4045-b3fc-ae754516a23d",
+          "name": "Part 2",
+          "start": 38,
+          "end": 68,
           "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "ef8c2607-e30a-4180-bcee-94840ae46b6b",
           "name": "Part 3",
-          "start": 40,
-          "end": 65,
+          "start": 68,
+          "end": 98,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "8eb5ccd2-c700-461f-8692-fc3568fee0a2",
+          "name": "Part 4",
+          "start": 98,
+          "end": 128,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "d7f9a36d-848b-47f4-876e-cfe9b0c22ae6",
+          "name": "Part 5",
+          "start": 128,
+          "end": 158,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "7581a721-c997-4247-a9cb-d478cfb62c69",
+          "name": "Part 6",
+          "start": 158,
+          "end": 188,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "e4832f32-dfab-43ae-a558-bcc070cceb79",
+          "name": "Part 7",
+          "start": 188,
+          "end": 218,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "d125f2da-004e-4f03-855a-7225acde37d3",
+          "name": "Part 8",
+          "start": 218,
+          "end": 248,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "76689382-599b-42f5-ba6a-623b5a6c6f53",
+          "name": "Part 9",
+          "start": 248,
+          "end": 278,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "ece4f80c-9f3d-4e3e-bb7b-058dc43dadad",
+          "name": "Part 10",
+          "start": 278,
+          "end": 308,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "df0f4d90-de00-4395-b478-5775ff3c9fe7",
+          "name": "Part 11",
+          "start": 308,
+          "end": 319,
+          "learned": false,
           "notes": ""
         }
       ],

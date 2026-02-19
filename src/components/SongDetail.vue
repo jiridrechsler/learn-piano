@@ -30,7 +30,10 @@
       <aside class="sidebar">
         <div class="sidebar-header">
           <h3>Parts</h3>
-          <button class="btn-primary btn-sm" @click="openAddPart">+ Add Part</button>
+          <div class="sidebar-header-actions">
+            <button class="btn-secondary btn-sm" @click="autoSplitParts" title="Auto-divide song into 30s parts">Auto 30s</button>
+            <button class="btn-primary btn-sm" @click="openAddPart">+ Add Part</button>
+          </div>
         </div>
 
         <div v-if="repeatingPart" class="repeat-bar">
@@ -73,6 +76,7 @@
 
 <script setup>
 import { ref, onUnmounted } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
 import { useSongsStore } from '../stores/songs.js'
 import YoutubePlayer from './YoutubePlayer.vue'
 import PartItem from './PartItem.vue'
@@ -175,6 +179,26 @@ function playSequence(parts, withStartDelay = false) {
   }
   if (withStartDelay) withDelay(startHead)
   else startHead()
+}
+
+function autoSplitParts() {
+  const duration = Math.floor(playerApi.value?.getDuration() ?? 0)
+  if (!duration) {
+    alert('Video duration not available yet — wait for the video to load.')
+    return
+  }
+  if (props.song.parts.length > 0 && !confirm(`Replace ${props.song.parts.length} existing part(s) with auto 30s parts?`)) return
+
+  const start = props.song.introSkip || 0
+  const parts = []
+  let t = start
+  let i = 1
+  while (t < duration) {
+    parts.push({ id: uuidv4(), name: `Part ${i}`, start: t, end: Math.min(t + 30, duration), learned: false, notes: '' })
+    t += 30
+    i++
+  }
+  store.updateSong({ ...props.song, parts })
 }
 
 function toggleLearned(part) {
@@ -303,8 +327,10 @@ function openEditPart(part) {
   padding: 0.7rem 0.9rem;
   border-bottom: 1px solid #2d2d4e;
   flex-shrink: 0;
+  gap: 0.5rem;
 }
 .sidebar-header h3 { color: #a78bfa; font-size: 0.95rem; }
+.sidebar-header-actions { display: flex; gap: 0.35rem; }
 
 .repeat-bar {
   display: flex;
