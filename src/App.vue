@@ -41,6 +41,7 @@ function onHashChange() {
 
 watch(() => store.activeSong, (song) => {
   setHash(song)
+  document.title = song ? `${song.title} — Learn Piano` : 'Learn Piano'
 })
 
 onMounted(async () => {
