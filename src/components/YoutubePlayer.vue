@@ -93,6 +93,7 @@ const api = {
 .yt-wrapper {
   width: 100%;
   aspect-ratio: 16 / 9;
+  min-height: 480px;
   background: #000;
   border-radius: 8px;
   overflow: hidden;
