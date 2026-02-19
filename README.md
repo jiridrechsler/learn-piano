@@ -9,12 +9,17 @@ A focused practice tool for learning piano songs from YouTube. Break any song in
 ## Features
 
 - **Add any song** via YouTube URL or video ID
+- **Full-screen layout** — video fills the screen, parts panel docks to the side
 - **Split into parts** — define named sections with start/end timestamps (e.g. Intro, Theme A, Bridge)
-- **Loop a part** — auto-repeat with a 5-second pause between loops so you can reset your hands
+- **Auto-split** — divide the song into 30-second parts in one click
+- **5-second countdown** — a visual overlay counts down before each part starts, so you have time to get your hands ready
+- **Loop a single part** — repeat one section endlessly with a 5-second break between cycles
+- **Loop multiple parts** — select any combination of parts (non-adjacent is fine) and repeat them together as a sequence
 - **Play from here** — chain all parts from a selected one to the end
 - **Skip intro** — set an offset so "Full Song" starts where the music actually begins
-- **Track progress** — mark individual parts as learned
-- **Persistent URL** — the current song is saved in the URL, so refreshing keeps you in place
+- **Track progress** — mark individual parts as learned; the active part is highlighted while playing
+- **Persistent URL** — the current song is saved in the URL hash, so refreshing keeps you in place
+- **Page title** — the browser tab shows the current song name
 
 ## Tech Stack
 
@@ -54,20 +59,26 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 4. Click **Save**
 
 ### Adding parts
-1. Open a song and click **+ Add Part**
+1. Open a song and click **+ Add Part**, or use **Auto 30s** to split the whole song automatically
 2. Give the part a name (auto-filled as "Part 1", "Part 2", etc.)
 3. Set the **Start** and **End** timestamps in seconds
 4. Add optional practice notes
 5. Click **Save**
 
 ### Practicing
+
 | Button | Action |
 |--------|--------|
-| **▶ Part** | Play just this section |
+| **▶ Part** | Play just this section (5s countdown before playback) |
 | **▶ From here** | Play this and all following parts in sequence |
-| **🔁** | Loop this part — pauses 5 seconds between each repeat so you can get ready |
-| **⏹ Stop** | Stop playback |
+| **🔁** | Toggle this part into the repeat selection |
+| **▶ Repeat** | Loop all selected parts in song order, 5s pause between cycles |
+| **⏹ Stop** | Stop playback (keeps your repeat selection) |
+| **✕** | Clear the repeat selection |
 | **✓ checkbox** | Mark a part as learned |
+
+#### Multi-part repeat
+Click **🔁** on any parts you want to practice together — they don't need to be adjacent. A bar appears at the top of the parts list showing your selection. Hit **▶ Repeat** to start looping them as a sequence. The currently playing part is highlighted in green.
 
 ## Project Structure
 
