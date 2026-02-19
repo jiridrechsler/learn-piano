@@ -98,8 +98,13 @@ function deleteSong() {
 }
 
 // ----- Part form -----
+const defaultPartName = computed(() => {
+  if (props.editPart) return props.editPart.name
+  const song = store.songs.find(s => s.id === props.songId)
+  return `Part ${(song?.parts.length ?? 0) + 1}`
+})
 const partForm = ref({
-  name: props.editPart?.name ?? '',
+  name: defaultPartName.value,
   start: props.editPart?.start ?? 0,
   end: props.editPart?.end ?? 30,
   notes: props.editPart?.notes ?? ''

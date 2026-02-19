@@ -12,6 +12,14 @@
           "start": 8,
           "end": 30,
           "notes": "tets"
+        },
+        {
+          "id": "deff12f3-9ded-43be-ad17-dfeb96a27c73",
+          "learned": false,
+          "name": "part 2",
+          "start": 30,
+          "end": 60,
+          "notes": ""
         }
       ],
       "introSkip": 8
