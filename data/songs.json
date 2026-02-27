@@ -9,15 +9,15 @@
           "id": "d99819ce-520d-4954-96c7-ab72fb2d1dcf",
           "name": "Part 1",
           "start": 8,
-          "end": 38,
+          "end": 30,
           "learned": false,
           "notes": ""
         },
         {
           "id": "9bc301a5-c558-4045-b3fc-ae754516a23d",
           "name": "Part 2",
-          "start": 38,
-          "end": 68,
+          "start": 30,
+          "end": 66,
           "learned": false,
           "notes": ""
         },
@@ -95,6 +95,250 @@
         }
       ],
       "introSkip": 8
+    },
+    {
+      "id": "678b6eab-e965-4291-af92-cd02c8e0bf4e",
+      "title": "Metallica - Nothing Else Matters ",
+      "youtubeId": "GjhszUfWe-8",
+      "introSkip": 9,
+      "parts": [
+        {
+          "id": "61fac530-eeae-4bdd-b580-05e5460c83f2",
+          "name": "Part 1",
+          "start": 9,
+          "end": 39,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "799182ca-4775-4ee9-bf61-74b2a90b08da",
+          "name": "Part 2",
+          "start": 39,
+          "end": 69,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "c3e348db-660a-4012-9cc6-d476ac37915f",
+          "name": "Part 3",
+          "start": 69,
+          "end": 99,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "f0887ca4-ddd1-4215-93da-9d7d130874fd",
+          "name": "Part 4",
+          "start": 99,
+          "end": 129,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "d2c8bcb0-fc2f-48b1-998c-dd478738b69b",
+          "name": "Part 5",
+          "start": 129,
+          "end": 159,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "de5af880-4573-477e-ba5e-6f2780147d5d",
+          "name": "Part 6",
+          "start": 159,
+          "end": 189,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "8156f0a8-88a8-4210-85b6-9e056c7036e7",
+          "name": "Part 7",
+          "start": 189,
+          "end": 219,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "00cea1d8-fd6c-4339-9b3d-d8f523942855",
+          "name": "Part 8",
+          "start": 219,
+          "end": 249,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "7c122619-1055-4ec1-a382-c13289a3a86e",
+          "name": "Part 9",
+          "start": 249,
+          "end": 279,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "857ce751-082e-4df7-a868-949c3a402243",
+          "name": "Part 10",
+          "start": 279,
+          "end": 309,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "2d8286e3-8908-46ca-ba05-ca16baf7ce61",
+          "name": "Part 11",
+          "start": 309,
+          "end": 339,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "02729096-97c9-4275-9926-bc119a905f4b",
+          "name": "Part 12",
+          "start": 339,
+          "end": 369,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "63d12546-f944-44ca-aca8-2b0b0fc11e44",
+          "name": "Part 13",
+          "start": 369,
+          "end": 399,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "6e546585-a61c-41ab-931e-9afe99b6ecb0",
+          "name": "Part 14",
+          "start": 399,
+          "end": 429,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "e3faef19-5bd9-40c4-a563-94a9ea205287",
+          "name": "Part 15",
+          "start": 429,
+          "end": 459,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "3ae9d58e-c939-4366-98cf-66846f4856cf",
+          "name": "Part 16",
+          "start": 459,
+          "end": 487,
+          "learned": false,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "24742e91-1331-4009-9d6b-a713e4a5b5ca",
+      "title": "Sweden - Minecraft",
+      "youtubeId": "hww2XhXvuIM",
+      "introSkip": 1,
+      "parts": [
+        {
+          "id": "51d60dd2-769f-4d57-9f0f-3b0da4d0e714",
+          "name": "Part 1",
+          "start": 1,
+          "end": 31,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "c72f233c-071d-4a18-be26-7ef6ff221c30",
+          "name": "Part 2",
+          "start": 31,
+          "end": 51,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "6805dba7-2e91-4d4a-b3af-87457cf1e84e",
+          "name": "Part 3",
+          "start": 51,
+          "end": 91,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "f08b67ab-eb9f-450a-a991-5a4f0933e960",
+          "name": "Part 4",
+          "start": 91,
+          "end": 121,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "0404d4bf-2530-44c3-861c-f109ff71b96d",
+          "name": "Part 5",
+          "start": 121,
+          "end": 133,
+          "learned": false,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "d50a608f-8f3f-4e0d-8e8d-10226886ff23",
+      "title": " Radiohead - Creep",
+      "youtubeId": "7LInfwDUNhk",
+      "introSkip": 5,
+      "parts": []
+    },
+    {
+      "id": "5130f179-8c08-4914-80f1-92637a05f776",
+      "title": "My Chemical Romance - Welcome To The Black Parade",
+      "youtubeId": "lZdfoc0PsFo",
+      "introSkip": 5,
+      "parts": []
+    },
+    {
+      "id": "f7ee7bcc-4cc6-431b-8bcc-73ddee254383",
+      "title": " Green Day - Boulevard Of Broken Dreams",
+      "youtubeId": "M6k17IvFUhA",
+      "introSkip": 5,
+      "parts": []
+    },
+    {
+      "id": "6b239b29-cf05-4023-8859-a974d7c2b6c0",
+      "title": " Beethoven - Moonlight Sonata ",
+      "youtubeId": "HOIrOjrioEs",
+      "introSkip": 0,
+      "parts": [
+        {
+          "id": "4ef2dcbb-8783-4733-ba62-d42cd5a7def4",
+          "name": "Part 1",
+          "start": 0,
+          "end": 30,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "7e4e1984-f07b-40ff-9b08-4e88e427617c",
+          "name": "Part 2",
+          "start": 30,
+          "end": 60,
+          "learned": false,
+          "notes": ""
+        },
+        {
+          "id": "e415ae92-fb4b-4a69-a30e-f646d48560d1",
+          "name": "Part 3",
+          "start": 60,
+          "end": 87,
+          "learned": false,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "447c9c85-0da2-46bf-8556-a6d7148a99be",
+      "title": " The Cranberries - Zombie",
+      "youtubeId": "w8mNTbotoFM",
+      "introSkip": 4,
+      "parts": []
     }
   ]
 }
